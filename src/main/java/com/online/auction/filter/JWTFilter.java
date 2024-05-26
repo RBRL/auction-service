@@ -24,24 +24,30 @@ public class JWTFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		try {
-			String authHeader = request.getHeader("Authorization");
-			String token = null;
-			String username = null;
-			if (authHeader != null && authHeader.startsWith("Bearer ")) {
-				token = authHeader.substring(7);
-				username = jwtUtil.extractUsername(token);
-			}
-			if (ObjectUtils.isEmpty(username)) {
-				throw new AuctionServiceException("Missing authorization header");
-			}
+		boolean db = false;
+		if (request.getRequestURI().contains("h2-console")) {
+			db = true;
+		}
+		if (!db) {
+			try {
+				String authHeader = request.getHeader("Authorization");
+				String token = null;
+				String username = null;
+				if (authHeader != null && authHeader.startsWith("Bearer ")) {
+					token = authHeader.substring(7);
+					username = jwtUtil.extractUsername(token);
+				}
+				if (ObjectUtils.isEmpty(username)) {
+					throw new AuctionServiceException("Missing authorization header");
+				}
 
-			// REST call to AUTH service
-			// avoid network call
-			jwtUtil.validateToken(token);
+				// REST call to AUTH service
+				// avoid network call
+				jwtUtil.validateToken(token);
 
-		} catch (Exception e) {
-			throw new RuntimeException("Unauthorized access to the application");
+			} catch (Exception e) {
+				throw new RuntimeException("Unauthorized access to the application");
+			}
 		}
 		filterChain.doFilter(request, response);
 	}
