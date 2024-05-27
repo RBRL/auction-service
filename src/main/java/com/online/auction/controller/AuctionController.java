@@ -19,9 +19,12 @@ import com.online.auction.exception.AuctionServiceException;
 import com.online.auction.service.ProductService;
 import com.online.auction.util.JWTUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @RestController
 @RequestMapping("/auction")
+@Slf4j
 public class AuctionController {
 	
 	@Autowired
@@ -48,6 +51,7 @@ public class AuctionController {
 	
 	@PostMapping("/bid")
 	public ResponseEntity<Bid> bidProduct(@RequestBody Bid bid) throws AuctionServiceException {
+		
 		Bid newBid=productService.bidForProduct(bid);
 		return ResponseEntity.ok().body(newBid);
 	}

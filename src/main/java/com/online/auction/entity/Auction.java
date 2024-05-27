@@ -2,6 +2,7 @@ package com.online.auction.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -35,13 +39,6 @@ public class Auction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-//	@JsonBackReference
-//	@OneToOne(mappedBy="auction", 
-//    		cascade = { 
-//    	    		CascadeType.MERGE,
-//    	    		CascadeType.PERSIST,
-//    	    		CascadeType.REMOVE
-//    })
     @JsonManagedReference
 	@OneToOne(cascade = { 
       		CascadeType.MERGE,
@@ -54,7 +51,7 @@ public class Auction {
 	private String buyerId;
 	@Builder.Default
 	BigDecimal bidPrice = new BigDecimal(0);
-	@JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	private LocalDateTime endTime;
 	@JsonProperty
 	private AuctionStatus status;
