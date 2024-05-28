@@ -8,13 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.online.auction.entity.Auction;
 import com.online.auction.entity.Bid;
 import com.online.auction.entity.Product;
@@ -27,8 +24,6 @@ import com.online.auction.util.AuctionStatus;
 import com.online.auction.util.ProductStatus;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.data.domain.Sort.Order;
 @Service
 @Slf4j
 public class ProductServiceImpl implements ProductService {
@@ -43,7 +38,10 @@ public class ProductServiceImpl implements ProductService {
 	BidRepository bidRepository;
 
 	List<Product> products;
-
+	/**
+	 * Add products with seller id only a user with role seller can use this API
+	 * For every product there is an entry in Auction with product id
+	 */
 	@Override
 	public Integer addProducts(List<Product> products) throws AuctionServiceException {
 		log.info("Auction Service add products");
@@ -67,6 +65,9 @@ public class ProductServiceImpl implements ProductService {
 
 	}
 
+	/**
+	 * View all products added any user can user this API
+	 */
 	@Override
 	public List<Product> viewProducts() throws AuctionServiceException {
 		List<Product> list = null;
@@ -79,6 +80,11 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
+	/**
+	 * User with role buyer can only bid on a product.
+	 * Bid request contains product id and buyer id to process the bid.
+	 * User can only bid if  biding price is greater than ask price of product 
+	 */
 	@Override
 	public Bid bidForProduct(Bid bid) throws AuctionServiceException {
 		Bid bidSaved = null;
@@ -90,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
 			Product prod = productRepository.findById(bid.getProdId())
 					.orElseThrow(() -> new AuctionServiceException("Product not found"));
 
-			// check product is AVAIABLE
+			// check product is AVAILABLE
 			if (prod.getStatus().equals(ProductStatus.AVAILABLE)) {
 
 				if(prod.getAskPrice().compareTo(bid.getBiddingPrice()) >0) {
@@ -121,7 +127,7 @@ public class ProductServiceImpl implements ProductService {
 			}
 
 		} catch (Exception e) {
-			log.error("Product is not auctioned",e.getMessage());
+			log.error("Error while placing bid",e.getMessage());
 			throw new AuctionServiceException(e.getMessage());
 		}
 		return bidSaved;
@@ -132,6 +138,10 @@ public class ProductServiceImpl implements ProductService {
 		bid = oldBid;
 		return bid;
 	}
+	/**
+	 * Only a seller can end and auction for a product.
+	 * Update status in Auction and Product table to avoid further autcion.
+	 */
 
 	@Override
 	public Auction endAuction(Long prodId) throws AuctionServiceException {
@@ -202,6 +212,14 @@ public class ProductServiceImpl implements ProductService {
 			throw new AuctionServiceException(e.getMessage());
 		}
 	}
+	
+	/**
+	 * This method finds all bids placed for a product sorting by bidding price then bidding time.
+	 * Pick the one which was placed first if bidding price is same.
+	 * @param long1
+	 * @return
+	 * @throws AuctionServiceException
+	 */
 
 	public List<Bid> getOrderByPriceTime(Long long1) throws AuctionServiceException {
 		List<Bid> bids=null;

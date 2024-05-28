@@ -15,7 +15,7 @@ public interface ProductService {
 
 	public Bid bidForProduct(Bid bid) throws AuctionServiceException;
 
-	public Auction endAuction(Long auction) throws AuctionServiceException;
+	public Auction endAuction(Long productID) throws AuctionServiceException;
 
 	public List<Auction> viewAuctions() throws AuctionServiceException;
 

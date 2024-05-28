@@ -2,7 +2,6 @@ package com.online.auction.controller;
 
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,13 +37,13 @@ public class AuctionController {
 		return "Welcome to aution service";
 	}
 
-	@PostMapping("/product/add")
+	@PostMapping("/products/add")
 	public ResponseEntity<String> addProducts(@RequestBody List<Product> products) throws AuctionServiceException {
 		Integer count=productService.addProducts(products);
 		return ResponseEntity.ok().body("Added "+ count +" number of records");
 	}
 	
-	@GetMapping("/product/all")
+	@GetMapping("/products/all")
 	public ResponseEntity<List<Product>> viewProducts() throws AuctionServiceException {
 		return ResponseEntity.ok().body(productService.viewProducts());
 	}

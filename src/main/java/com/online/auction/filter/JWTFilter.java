@@ -1,5 +1,8 @@
 package com.online.auction.filter;
 
+import java.io.IOException;
+import java.util.*;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,8 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.online.auction.exception.AuctionServiceException;
 import com.online.auction.util.JWTUtil;
 
-import java.io.IOException;
-
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
@@ -25,9 +26,11 @@ public class JWTFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		boolean db = false;
-		if (request.getRequestURI().contains("h2-console")) {
+		String path = request.getRequestURI();
+		if (path.contains("h2-console")) {
 			db = true;
 		}
+
 		if (!db) {
 			try {
 				String authHeader = request.getHeader("Authorization");
@@ -49,6 +52,8 @@ public class JWTFilter extends OncePerRequestFilter {
 				throw new RuntimeException("Unauthorized access to the application");
 			}
 		}
+
 		filterChain.doFilter(request, response);
 	}
+
 }

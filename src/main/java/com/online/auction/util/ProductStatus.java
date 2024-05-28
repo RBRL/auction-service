@@ -1,8 +1,6 @@
 package com.online.auction.util;
 
 
-import java.util.Arrays;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
